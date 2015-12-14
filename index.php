@@ -31,6 +31,10 @@ body{
   width:50%;
   border-radius:3px;
 }
+.text-muted{
+  opacity:0.5;
+  font-size:9px;
+}
 </style>
 
 <body ng-app = 'cliApp'>
@@ -51,12 +55,12 @@ body{
   </nav>
   <div id = 'controls'>
     <input class = 'form-control top-input' id = 'search' ng-model = 'content' placeholder = 'Enter commands here, or text' ng-enter = 'sendTweet(channel, content)' />
-    <input class = 'form-control top-input' id = 'search' ng-model = 'searchTerm' placeholder = 'Search'/>
   </div>
   <div id = 'tweets-container'>
     <h2>{{channel}}</h2>
-    <div ng-repeat = 'tweet in tweets' class = 'tweet'>
+    <div ng-repeat = 'tweet in tweets'  class = 'tweet'>
       <div class = 'content' ng-bind-html = 'tweet.get("content") | to_trusted'></div>
+      <div class = 'text-muted'>{{tweet.get("createdAt")}}'</div>
       <a href = 'javascript:void(0)' ng-click = 'deleteTweet(tweet)'>x</a>
     </div>
   </div>
