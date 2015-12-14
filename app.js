@@ -1,6 +1,20 @@
-var app = angular.module('tweetApp', []);
+var app = angular.module('cliApp', []);
 app.filter('to_trusted', ['$sce', function($sce){
   return function(text) {
     return $sce.trustAsHtml(text);
   };
 }]);
+
+app.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+ 
+                event.preventDefault();
+            }
+        });
+    };
+});
