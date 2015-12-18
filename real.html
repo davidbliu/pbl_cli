@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BB</title>
+
+
+    <!-- Load Styles -->
+    <link rel = 'stylesheet' href = './bower_components/bootstrap/dist/css/bootstrap.min.css'>
+    <link rel = 'stylesheet' href = './main.css'>
+      
+
+    <!-- Load the Realtime JavaScript library -->
+    <script src="https://apis.google.com/js/api.js"></script>
+
+    <script src = './bower_components/jquery/dist/jquery.min.js'></script>
+    <script src = './bower_components/underscore/underscore-min.js'></script>
+
+    <!-- Load the utility library -->
+    <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
+
+    <script src = './bower_components/angular/angular.min.js'></script>
+    <!--load my own stuff (david)-->
+    <script src = './node_modules/parse/dist/parse-latest.min.js'></script>
+    <script src = './parse.js'></script>
+
+    <script src = './app.js'></script>
+    <script src = './controllers/note.js'></script>
+    <script src = './lib/jquery.textcomplete.min.js'></script>
+    <script src = './lib/jquery.overlay.min.js'></script>
+    <script src = './interpreter/interpreter.js'></script>
+    <script src = './interpreter/tabling.js'></script>
+    <script src = './controllers.js'></script>
+    
+  </head>
+  <body ng-app = 'cliApp'>
+    <div class = 'row'>
+      <div class = 'centered'>
+        <h1>DavidBook</h1>
+      </div>
+    </div>
+
+    <div class = 'row'>
+      <div class = 'col-md-2'>
+        <h3>Online</h3>
+        <div id = 'colabs'> </div>
+      </div>
+      <div class = 'col-md-6'>
+        <textarea class = 'form-control tinput' id="text_area_1"></textarea>
+        <div id = 'tweets'>
+          <div ng-controller = 'CliCtrl'>
+            <h2>Tweets</h2>
+            <textarea class = 'form-control' placeholder = 'Write a post' ng-model = 'content'></textarea>
+            <div class = 'btn btn-default' id = 'compose-tweet-btn' ng-click = 'sendTweet("#general", content)'>Compose</div>
+            <div ng-repeat = 'tweet in tweets' class = 'tweet'>{{tweet.content}}</div>
+          </div>
+
+        </div>
+      </div>
+      <div class = 'col-md-4'>
+        <div ng-controller = 'NoteCtrl'>
+          <h3>Notes</h3>
+          <input type = 'text' class = 'form-control' ng-model = 'newKey' placeholder= 'New Note' ng-enter = 'makeNote(newKey)' />
+          <div ng-repeat = 'key in keys'>
+            <a href = 'javascript:void(0)' ng-click = 'changeNote(key)'>{{key}}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src = './real.js'></script>
+
+  </body>
+</html>

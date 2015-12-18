@@ -1,0 +1,124 @@
+<link rel = 'stylesheet' href = './bower_components/bootstrap/dist/css/bootstrap.min.css'>
+<script src = './bower_components/jquery/dist/jquery.min.js'></script>
+<script src = './node_modules/parse/dist/parse-latest.min.js'></script>
+<script src = './bower_components/angular/angular.min.js'></script>
+<script src = './bower_components/underscore/underscore-min.js'></script>
+<script src = './lib/md5.min.js'></script>
+
+<!-- autocomplete -->
+<link rel = 'stylesheet' href = './lib/jquery.textcomplete.css'>
+<script src = './lib/jquery.overlay.min.js'></script>
+<script src = './lib/jquery.textcomplete.js'></script>
+
+<script src = './parse.js'></script>
+
+<!--import interpreter-->
+<script src = './interpreter/interpreter.js'></script>
+<script src = './interpreter/tabling.js'></script>
+<script src = './app.js'></script>
+<script src = './controllers.js'></script>
+
+<style type = 'text/css'>
+body{
+  background-image: url("wood.jpg");
+}
+.navbar{
+  border-radius:0px;
+}
+.top-input{
+  width:100%;
+  margin:5px;
+}
+#banner{
+  text-align:center;
+  color:white;
+}
+.tweet{
+  background-color:white;
+  border:1px solid rgba(0,0,0,0.1);
+  padding:5px;
+  margin:5px;
+  width:100%;
+  border-radius:3px;
+}
+.text-muted{
+  opacity:0.5;
+  font-size:9px;
+}
+.func-label{
+  margin:5px;
+  cursor:pointer;
+}
+
+.tweet-function{
+  background-color:rgba(0,0,0,0.1);
+  cursor:pointer;  
+}
+.tweet-function:hover{
+  background-color:yellow;
+}
+.profile-img{
+  height:30px;
+}
+</style>
+
+<body ng-app = 'cliApp'>
+
+<div ng-controller = 'CliCtrl'>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <h3 id = 'banner'>$PBL_cli;</h3>
+      </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li ng-repeat = 'channel in channels' ng-click = 'pullTweets(channel)'><a href="#">{{channel}}</a></li>
+          <li><a href = '#/about'>Help</a></li>
+        </ul>
+      </div>
+    </div><!-- /.container-fluid -->
+  </nav>
+
+
+  <div class = 'col-md-6'>
+    <div id = 'controls'>
+      <h3>Using $PBL_cli; as {{memberHash[myEmail].get('name')}}</h3>
+      <textarea class = 'form-control top-input' id = 'cli-input' ng-model = 'content' placeholder = 'Enter commands here, or text' ></textarea> 
+      <div class = 'btn btn-primary' ng-click = 'sendTweet(channel, content)' >Enter</div>
+    </div>
+    <div id = 'tweets-container'>
+      <h2>{{channel}}</h2>
+      <div ng-repeat = 'tweet in tweets'  class = 'row tweet'>
+        <div class = 'col-md-1' >
+          <div><img src = 'http://www.clker.com/cliparts/5/7/4/8/13099629981030824019profile.svg.med.png' class = 'profile-img'/></div>
+        </div>
+        <div class = 'col-md-10'>
+          <div class = 'content' ng-bind-html = 'tweet.content | to_trusted'></div>
+          <div class = 'text-muted'>{{tweet.createdAt}}'</div>
+        </div>
+        <div class = 'col-md-1' >
+          <div>
+            <a href = 'javascript:void(0)' ng-click = 'deleteTweet(tweet)'>x</a>
+          </div>
+          <div>
+            <a href = 'javascript:void(0)' ng-click = 'reply(tweet)'>reply</a>
+          </div>
+          <div>
+            <a href = 'javascript:void(0)'>follow</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end of col md 6 -->
+  
+  <div class = 'col-md-6'>
+    <h1>Functions</h1>
+    <h2>{{channel}} Functions</h2>
+    <div ng-repeat = 'func in funcs' class = 'label label-primary func-label' ng-click = 'startFunc(func)'>${{func}}</div>
+  </div>
+  
+</div>
+
+</body>
