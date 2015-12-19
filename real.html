@@ -24,7 +24,9 @@
     <script src = './parse.js'></script>
 
     <script src = './app.js'></script>
+    <script src = './real.js'></script>
     <script src = './controllers/note.js'></script>
+    <script src = './controllers/drive.js'></script>
     <script src = './lib/jquery.textcomplete.min.js'></script>
     <script src = './lib/jquery.overlay.min.js'></script>
     <script src = './interpreter/interpreter.js'></script>
@@ -35,7 +37,7 @@
   <body ng-app = 'cliApp'>
     <div class = 'row'>
       <div class = 'centered'>
-        <h1>DavidBook</h1>
+        <h1></h1>
       </div>
     </div>
 
@@ -46,15 +48,18 @@
       </div>
       <div class = 'col-md-6'>
         <textarea class = 'form-control tinput' id="text_area_1"></textarea>
-        <div id = 'tweets'>
-          <div ng-controller = 'CliCtrl'>
-            <h2>Tweets</h2>
-            <textarea class = 'form-control' placeholder = 'Write a post' ng-model = 'content'></textarea>
-            <div class = 'btn btn-default' id = 'compose-tweet-btn' ng-click = 'sendTweet("#general", content)'>Compose</div>
-            <div ng-repeat = 'tweet in tweets' class = 'tweet'>{{tweet.content}}</div>
-          </div>
-
+        <div ng-controller = 'DriveCtrl'>
+          {{files}}
         </div>
+        <!--<div id = 'tweets'>-->
+          <!--<div ng-controller = 'CliCtrl'>-->
+            <!--<h2>Tweets</h2>-->
+            <!--<textarea class = 'form-control' placeholder = 'Write a post' ng-model = 'content'></textarea>-->
+            <!--<div class = 'btn btn-default' id = 'compose-tweet-btn' ng-click = 'sendTweet("#general", content)'>Compose</div>-->
+            <!--<div ng-repeat = 'tweet in tweets' class = 'tweet'>{{tweet.content}}</div>-->
+          <!--</div>-->
+
+        <!--</div>-->
       </div>
       <div class = 'col-md-4'>
         <div ng-controller = 'NoteCtrl'>
@@ -66,7 +71,6 @@
         </div>
       </div>
     </div>
-    <script src = './real.js'></script>
 
   </body>
 </html>

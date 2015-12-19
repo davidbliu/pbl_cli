@@ -1,4 +1,5 @@
 var app = angular.module('cliApp', []);
+var MAXINT = 1000;
 app.filter('to_trusted', ['$sce', function($sce){
   return function(text) {
     return $sce.trustAsHtml(text);
@@ -18,3 +19,12 @@ app.directive('ngEnter', function () {
         });
     };
 });
+
+app.directive('scrollSpy', function($timeout){
+  return function(scope, elem, attr) {
+    scope.$watch(attr.scrollSpy, function(value) {
+      $timeout(function() { elem.scrollspy('refresh') }, 200);
+    }, true);
+  }
+});
+
