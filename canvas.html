@@ -1,0 +1,73 @@
+<style type = 'text/css'>
+#img-div{
+  border-top:10px solid black;
+}
+.canvas-html{
+  border:1px solid black;
+}
+.point{
+  width:10px;
+  height:10px;
+  background-color:red;
+}
+</style>
+<div id = 'canvas-div'>
+  <div id = 'canvas-div'></div>
+</div>
+<script src = './data_url.js'></script>
+<script src = './bower_components/jquery/dist/jquery.js'></script>
+<script type = 'text/javascript'>
+var canvas = document.createElement('canvas');
+
+
+function redrawCanvas(min_x, min_y, max_x, max_y){
+  var canvasHeight = $(window).height();
+  var canvasWidth = $(window).width();
+  var img = new Image();
+  img.onload = function() {
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      canvas.getContext("2d").drawImage(img, min_x, min_y, max_x, max_y, 0, 0, canvas.width, canvas.height);
+      $(canvas).addClass('canvas-html');
+      $(canvas).attr('id', 'canvas');
+      // Perform callback after image loads
+      $('#canvas-div').prepend(canvas);
+      console.log(canvas.toDataURL());
+  }
+  img.src = data_url;
+}
+redrawCanvas(0, 0, $(window).width(), $(window).height());
+var minX = 9999;
+var minY = 9999;
+var maxX = -1;
+var maxY = -1;
+function resetBounds(){
+  minX = 9999;
+  minY = 9999;
+  maxX = -1;
+  maxY = -1;
+}
+$(document).mousedown(function(){
+  resetBounds();
+});
+$(document).mouseup(function(){
+  console.log([minX, minY, maxX, maxY].join(','));
+  redrawCanvas(minX, minY, maxX, maxY);
+});
+$(document).mousemove(function( event ) {
+  mouseX = event.pageX;
+  mouseY = event.pageY;
+  if(mouseX < minX){
+    minX = mouseX;
+  }
+  if(mouseX > maxX){
+    maxX = mouseX;
+  }
+  if(mouseY < minY){
+    minY = mouseY;
+  }
+  if(mouseY > maxY){
+    maxY = mouseY;
+  }
+});
+</script>

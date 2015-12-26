@@ -1,0 +1,13 @@
+
+          <div class = 'pull-left golink-div' ng-repeat = 'golink in weekDict[week.key]'>
+            <div class = 'golink-meta'>
+                <div class = 'golink-key'> <a href = '{{golink.url}}' target = '_blank'>{{golink.key}}</a> </div>
+                <div>{{golink.description}}</div>
+            </div>
+            <img ng-show= 'golink.image' src = '{{golink.image.url()}}' class = 'image-tn'>
+            <div class = 'bottom'>
+              <i class = 'glyphicon glyphicon-remove' ng-click = 'deleteGolink(golink)'></i>
+              <div ng-repeat = 'tag in golink.tags' class = 'label label-primary tag-label'>{{tag}}</div>
+              <div class = 'label label-default email-label'>{{golink.member_email}}</div>
+            </div> <!--end of bottom -->
+          </div> <!--end of golink-->

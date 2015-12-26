@@ -34,18 +34,27 @@
     <script src = './icons.js'></script>
     <script src = './app.js'></script>
     <script src = './controllers/visual.js'></script>
+
+    <link rel = 'stylesheet' href = './flipper.css'>
     
   </head>
   <body ng-app = 'cliApp'>
   <div ng-controller = 'VisualCtrl'>
-      <div class = 'jumbotron'>
+      <div class = 'jumbotron' style = 'background-color:#F44444'>
         <h3>Visual Golinks</h3>
       </div>
       <div class = 'row'>
-        <div class = 'pull-left' ng-repeat = 'golink in golinks'>
+        <div class = 'pull-left golink-div' ng-repeat = 'golink in golinks'> 
+          <div class = 'golink-meta'>
+            <div class = 'pull-right'>
+              <i class = 'glyphicon glyphicon-remove' ng-click = 'deleteGolink(golink)'></i>
+            </div>
+            <div class = 'pull-left'>
+              <div class = 'golink-key'>{{golink.key}}</div>
+            </div>
+          </div>
           <a href = '{{golink.url}}'>
-            <div>{{golink.key}}</div>
-            <img src = '{{golink.image.url()}}' class= 'image-tn'/>
+            <img src = '{{golink.image.url()}}' class = 'image-tn'>
           </a>
         </div>
       </div>
