@@ -1,4 +1,5 @@
 var ParseGoLinkFields= ['key', 'url', 'createdAt', 'image', 'updatedAt', 'description', 'tags', 'member_email', 'num_clicks'];
+var WEEKS = 604800;
 
 
 app.controller('CatalogueCtrl', function($scope){
@@ -54,6 +55,7 @@ app.controller('CatalogueCtrl', function($scope){
     $scope.page = $scope.page + diff;
     pullGolinks();
   };
+
   function pullGolinks(){
     $scope.golinks=[];
     $scope.weekDict = {};
@@ -72,27 +74,32 @@ app.controller('CatalogueCtrl', function($scope){
         $scope.maxDate = _.max($scope.golinks, function(x){
           return x.createdAt;
         }).createdAt;
-        //minDateUnix = $scope.minDate.getTime()/1000;
-        maxDateUnix = $scope.maxDate.getTime()/1000;
-        var WEEKS = 604800;
-        var seen = [];
-        _.each($scope.golinks, function(golink){
-          weeks = Math.floor((maxDateUnix - golink.createdAt.getTime()/1000)/WEEKS);
-          if(!_.contains(seen, weeks)){
-            $scope.weekDict[weeks] = [];
-            seen.push(weeks);
-          }
-          $scope.weekDict[weeks].push(golink);
-        });
+        var minDateUnix = $scope.minDate.getTime()/1000;
+        var maxDateUnix = $scope.maxDate.getTime()/1000;
+        $scope.weekDict = getWeekDict($scope.golinks, maxDateUnix);
         $scope.weeks = _.map(_.keys($scope.weekDict), function(week){
           wk = {};
           wk.key = week;
           endTime= new Date(1000*(maxDateUnix - week * WEEKS));
           startTime = new Date(endTime - WEEKS*1000);
-          //startTime= (new Date(1000*(maxDateUnix - (week+1) * WEEKS))).toString();
           wk.text = startTime.toString() + ' - ' + endTime.toString();
           return wk;
         });
+
+        //also pull blogposts
+        //console.log('pulling blogposts too');
+        //bq = new Parse.Query(BlogPost);
+        //bq.greaterThan('createdAt', $scope.minDate);
+        //bq.find({
+          //success:function(blogposts){
+            //$scope.blogposts = convertParseObjects(blogposts, BlogPostFields);
+            //_.each($scope.blogposts, function(x){
+            //});
+            //$scope.blogpostDict = getWeekDict($scope.blogposts, maxDateUnix);
+            //console.log($scope.blogpostDict);
+            //$scope.$digest();
+          //}
+        //});
         $scope.$digest();
       }
     });
