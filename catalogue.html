@@ -36,6 +36,7 @@
 
     <script src = './icons.js'></script>
     <script src = './app.js'></script>
+    <script src = './helpers/catalogue.js'></script>
     <script src = './controllers/catalogue.js'></script>
 
     
@@ -46,6 +47,7 @@
         <h3>PBL Links</h3>
         <input type = 'text' placeholder = 'Search PBL Links' class = 'form-control' id =   'search-input' ng-model = 'searchTerm'>
       </div>
+
 
       <div id = 'myModal' class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
@@ -70,27 +72,39 @@
         <i class = 'glyphicon glyphicon-arrow-right' ng-click = 'changePage(1)'></i>
         <div>Page {{page+1}}, {{pageSize}} results per page</div> 
       </div>
-      <div class = 'row' ng-repeat = 'week in weeks'>
-        <h2 class = 'header'>{{week.text}}</h2>
-        <div class = 'golink-div' ng-repeat = 'golink in weekDict[week.key] | filter:searchTerm' id = '{{golink.objectId}}'>
-          <div> <img src = '{{getImg(golink)}}' class = 'golink-icon'/> </div>
-          <div><a href = '{{golink.url}}' target = '_blank'>{{golink.key}}</a></div>
-          <div>{{golink.description}}</div>
-          <div>{{golink.member_email}}</div>
-          <div ng-if = 'golink.tags && golink.tags.length > 0' >tags: <i>{{golink.tags.join(',')}}</i></div>
-          <div>{{golink.num_clicks}}</div>
-          <div ng-if = 'golink.image'>
-            <img src = '{{golink.image.url()}}' class = 'thumbnail-img' ng-click = 'showModal(golink)'></img>
-          </div>
-          <div>
-            <i class = 'glyphicon glyphicon-remove' ng-click = 'deleteGolink($event, golink)'></i>
-            <i class = 'glyphicon glyphicon-cog' ng-click = 'showModal(golink)'></i>
-          </div>
-        </div>
+
+      <div ng-show = 'weeks == null || weeks.length ==  0' style = 'text-align:center;width:100%'>
+        <img src = 'http://downgraf.com/wp-content/uploads/2014/09/01-progress.gif' height = '100'></img>
       </div>
 
-        <!--<div class = 'col-md-6'>-->
-          <!--<img ng-repeat = 'golink in weekDict[week.key]' ng-if = 'golink.image' src = '{{golink.image.url()}}' class = 'thumbnail-img'></img>-->
+      <div class = 'row' ng-repeat = 'week in weeks'>
+        <h2 class = 'header'>{{week.text}}</h2>
+        <div class = 'col-md-12'>
+          <div class = 'golink-div' ng-repeat = 'golink in weekDict[week.key] | filter:searchTerm' id = '{{golink.objectId}}'>
+            <div> <img src = '{{getImg(golink)}}' class = 'golink-icon'/> </div>
+            <div><a href = '{{golink.url}}' target = '_blank'>{{golink.key}}</a></div>
+            <div>{{golink.description}}</div>
+            <div>{{golink.member_email}}</div>
+            <div ng-if = 'golink.tags && golink.tags.length > 0' >tags: <i>{{golink.tags.join(',')}}</i></div>
+            <div>{{golink.num_clicks}}</div>
+            <div ng-if = 'golink.image'>
+              <img src = '{{golink.image.url()}}' class = 'thumbnail-img' ng-click = 'showModal(golink)'></img>
+            </div>
+            <div>
+              <i class = 'glyphicon glyphicon-remove' ng-click = 'deleteGolink($event, golink)'></i>
+              <i class = 'glyphicon glyphicon-cog' ng-click = 'showModal(golink)'></i>
+              <a href = '/cli/insights.html?id={{golink.objectId}}' class = 'insight-link'><i class = 'glyphicon glyphicon-eye-open'></i></a>
+            </div>
+          </div><!-- end of golink-div-->
+        </div><!-- end of col md 6-->
+        <!--<div class = 'col-md-4'>-->
+          <!--<div ng-repeat = 'post in blogpostDict[week.key]'>-->
+            <!--<div class = 'blogpost-div'>-->
+              <!--<div>{{post.title}}</div>-->
+              <!--<div>{{post.author}}</div>-->
+              <!--<div class = 'post-content' ng-bind-html = 'post.content | to_trusted'></div>-->
+            <!--</div>-->
+          <!--</div>-->
         <!--</div>-->
       </div> <!--end of row week in weeks-->
   </div>

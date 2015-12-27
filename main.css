@@ -140,6 +140,18 @@ a{
   /*border:3px solid rgba(0,0,0,0.1);*/
   margin:5px;
   float:left;
+  width:225px;
+  height:200px;
+  overflow:auto;
+}
+.blogpost-div{
+  background-color:rgba(175,175,250,0.1);
+  max-width:500px;
+  max-height:300px;
+  overflow:hidden;
+  padding:5px;
+  margin:5px;
+  float:left;
 }
 .golink-meta{
   display:block;
@@ -171,4 +183,7 @@ a{
 }
 #modal-img{
   width:100%;
+}
+.insight-link{
+  color:black !important;
 }

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BB</title>
+    <link rel = 'icon' type = 'image/png' href = './icons/logo-138.png'>
+
+
+    <!-- Load Styles -->
+
+    <!--<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>-->
+    <!--<script src = './bower_components/jquery/dist/jquery.min.js'></script>-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js" type="text/javascript"></script>
+    <script src = 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js'></script>
+    <script src = 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/umd/scrollspy.js'></script>
+
+    <link rel = 'stylesheet' href = './bower_components/bootstrap/dist/css/bootstrap.min.css'>
+
+    <!--<link rel = 'stylesheet' href = 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.min.css'>-->
+    <link rel = 'stylesheet' href = './main.css'>
+      
+
+    <!-- Load the Realtime JavaScript library -->
+    <script src="https://apis.google.com/js/api.js"></script>
+
+    <script src = './bower_components/underscore/underscore-min.js'></script>
+
+    <!-- Load the utility library -->
+    <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
+
+    <script src = './bower_components/angular/angular.min.js'></script>
+    <!--load my own stuff (david)-->
+    <script src = './node_modules/parse/dist/parse-latest.min.js'></script>
+    <script src = './date.js'></script>
+
+    <script src = './parse.js'></script>
+
+    <script src = './icons.js'></script>
+    <script src = './app.js'></script>
+    <script src = './controllers/insights.js'></script>
+
+    
+  </head>
+  <body ng-app = 'cliApp'>
+  <div ng-controller = 'InsightsCtrl'>
+      <div class = 'jumbotron' >
+        <h3>Insights: {{key}}</h3>
+        <a href = '/cli/catalogue.html' style = 'color:white !important'>Back to catalogue</a>
+      </div>
+      <div ng-repeat = 'click in clicks'>{{click.member_email}}: {{click.createdAt}}</div>
+
+  </div>
+  </body>
+</html>
