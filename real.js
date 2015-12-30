@@ -1,5 +1,6 @@
 var docId = '0BwLZUlGsG71ONks1NUhWaV9abUE'
 var clientId = '158145275272-lj3m0j741dj9fp50rticq48vtrfu59jj.apps.googleusercontent.com';
+var myId = '';
 
 // Create a new instance of the realtime utility with your client ID.
 var realtimeUtils = new utils.RealtimeUtils({ clientId: clientId });
@@ -44,52 +45,90 @@ function onFileInitialize(model) {
   model.getRoot().set('demo_string', string);
 }
 function showCollaborators(collaborators){
-  $('#colabs').html('');
+  $('#collaborators-div').html('');
   _.each(collaborators, function(c){
-    col = $('<div></div>');
-    $(col).text(c.displayName);
-    img = $('<img></img>');
-    $(img).addClass('profile-img');
+    col = $('<div>&nbsp;'+c.displayName+'</div>');
+    img = $('<img class = "profile-img"></img>');
     $(img).attr('src', c.photoUrl);
     $(col).prepend(img);
-    $('#colabs').append(col);
+    $('#collaborators-div').append(col);
   });
 }
 
-var keys;
-function changeNote(key){
-  var collaborativeString = myDoc.getModel().getRoot().get(key);
-  if(collaborativeString == null){
-    var collabString = myDoc.getModel().createString();
-    myDoc.getModel().getRoot().set(key, collabString);
-    var collaborativeString = myDoc.getModel().getRoot().get(key);
-    keys = myDoc.getModel().getRoot().keys();
-  }
-  binding.unbind();
-  wireTextBoxes(collaborativeString);
-
-}
 // After a file has been initialized and loaded, we can access the
 // document. We will wire up the data model to the UI.
 function onFileLoaded(doc) {
   myDoc = doc;
   keys = myDoc.getModel().getRoot().keys();
+  //show collaborators
   showCollaborators(doc.getCollaborators());
-  //add event listeners for collaborators joining and exiting the doc
   doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_JOINED, function(){
     showCollaborators(doc.getCollaborators());
   });
   doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_LEFT, function(){
     showCollaborators(doc.getCollaborators());
   });
-  var collaborativeString = doc.getModel().getRoot().get('demo_string');
-  wireTextBoxes(collaborativeString);
+  //tell extension online
+  window.postMessage({'type':'copilot_webpage', 'name':'ONLINE'},'*');
+  activateMessages();
+  getList();
+  //display list on the board
+  handleListChange();
 }
 
-// Connects the text boxes to the collaborative string
-var binding = null;
-function wireTextBoxes(collaborativeString) {
-  var textArea1 = document.getElementById('text_area_1');
-  binding = gapi.drive.realtime.databinding.bindString(collaborativeString, textArea1);
+var tabList;
+function getList(){
+  tabList = myDoc.getModel().getRoot().get('tab_list');
+  tabList.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, function(event){
+    handleListChange();
+  });
+  tabList.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, function(event){
+    handleListChange();
+  });
 }
 
+// redraws the links shown onscreen
+var tabs = [];
+function handleListChange(){
+  tabs = [];
+  //dont add duplicate urls
+  seenUrls = [];
+  $('#tabs-list').html('');
+  for(var i=0;i<tabList.length;i++){
+    tab = tabList.get(i);
+    tabs.push(tab)
+    if(!_.contains(seenUrls, tab.url)){
+      seenUrls.push(tab.url);
+      favicon_img = '<img src = "'+tab.favIconUrl+'" class = "favicon-img"></img>';
+      $('#tabs-list').append('<li class = "list-group-item">'+favicon_img+'&nbsp;<a href = "'+tab.url+'" target = "_blank">'+tab.title+'</a></li>');
+    }
+  }  
+  //send sync message to extension
+  //window.postMessage({'type':'copilot_webpage', 'name':'sync', 'tabs':tabs},'*'); 
+}
+
+// receive messages from chrome extension
+function activateMessages(){
+  window.addEventListener('message', function(event){
+    if(event.data && event.data.type && event.data.type == 'extension'){
+      message = event.data;
+      myId = message.id;
+      myTabs = message.tabs;
+      _.each(myTabs, function(x){
+        x.userId = myId;
+      });
+      var tabs = _.map(_.range(tabList.length), function(i){
+        return tabList.get(i);
+      });
+      tabs = _.filter(tabs, function(x){
+        x.userId != myId;
+      });
+      var finalTabs = tabs.concat(myTabs);
+
+      tabList.removeRange(0,tabList.length);
+      _.each(finalTabs, function(tab){
+        tabList.push(tab);
+      });
+    }
+   });
+}
