@@ -9,7 +9,6 @@ authorize();
 
 function authorize() {
   realtimeUtils.authorize(function(response){
-    console.log(response);
     if(response.error){
       realtimeUtils.authorize(function(response){
         start();
@@ -46,8 +45,6 @@ function onFileInitialize(model) {
   model.getRoot().set('demo_string', string);
 }
 function showCollaborators(collaborators){
-  console.log('collaborators are');
-  console.log(collaborators);
   $('#collaborators-div').html('');
   _.each(collaborators, function(c){
     col = $('<div>&nbsp;'+c.displayName+'</div>');
@@ -90,17 +87,24 @@ function getList(){
   });
 }
 
+// redraws the links shown onscreen
+var tabs = [];
 function handleListChange(){
-  var tabs = [];
+  tabs = [];
+  //dont add duplicate urls
+  seenUrls = [];
   $('#tabs-list').html('');
   for(var i=0;i<tabList.length;i++){
     tab = tabList.get(i);
     tabs.push(tab)
-    favicon_img = '<img src = "'+tab.favIconUrl+'" class = "favicon-img"></img>';
-    $('#tabs-list').append('<li class = "list-group-item">'+favicon_img+'&nbsp;<a href = "'+tab.url+'" target = "_blank">'+tab.title+'</a></li>');
+    if(!_.contains(seenUrls, tab.url)){
+      seenUrls.push(tab.url);
+      favicon_img = '<img src = "'+tab.favIconUrl+'" class = "favicon-img"></img>';
+      $('#tabs-list').append('<li class = "list-group-item">'+favicon_img+'&nbsp;<a href = "'+tab.url+'" target = "_blank">'+tab.title+'</a></li>');
+    }
   }  
   //send sync message to extension
-  window.postMessage({'type':'copilot_webpage', 'name':'sync', 'tabs':tabs},'*'); 
+  //window.postMessage({'type':'copilot_webpage', 'name':'sync', 'tabs':tabs},'*'); 
 }
 
 // receive messages from chrome extension
@@ -108,8 +112,21 @@ function activateMessages(){
   window.addEventListener('message', function(event){
     if(event.data && event.data.type && event.data.type == 'extension'){
       message = event.data;
+      myId = message.id;
+      myTabs = message.tabs;
+      _.each(myTabs, function(x){
+        x.userId = myId;
+      });
+      var tabs = _.map(_.range(tabList.length), function(i){
+        return tabList.get(i);
+      });
+      tabs = _.filter(tabs, function(x){
+        x.userId != myId;
+      });
+      var finalTabs = tabs.concat(myTabs);
+
       tabList.removeRange(0,tabList.length);
-      _.each(message.tabs, function(tab){
+      _.each(finalTabs, function(tab){
         tabList.push(tab);
       });
     }
