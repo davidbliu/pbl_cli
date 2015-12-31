@@ -14,6 +14,7 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script src = './bower_components/jquery/dist/jquery.min.js'></script>
+    <script src = 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js'></script>
     <script src = './bower_components/underscore/underscore-min.js'></script>
 
     <!-- Load the utility library -->
@@ -29,7 +30,33 @@
     <div class = 'jumbotron'>
       <h3><img src = 'mushroom.png' height = 50> Wtcha Dodo: Browse Together</h3>
     </div>
+    
     <div id = 'copilot' ng-controller = 'CopilotCtrl'>
+
+      <div id = 'myModal' class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">{{modalTitle}}</h4>
+            </div>
+            <div class="modal-body">
+              <ul class = 'list-group'>
+                <li ng-repeat = 'tab in tabLog track by $index' class = 'list-group-item'>
+                  <img src = '{{tab.faviconUrl}}' class = 'favicon-img'> 
+                  <a href = '{{tab.url}}'>&nbsp;{{tab.title}}</a>
+                  <div class = 'pull-right label label-primary'>{{translateTime(tab.time)}}</div>
+                </li>
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
+
       <div id = 'collaborators-div'>
         <div ng-repeat = 'collaborator in collaborators track by $index'>
           <img src = '{{collaborator.photoUrl}}' class = 'collaborator-img'>
@@ -40,8 +67,10 @@
       <div ng-show = 'userIds == null' style = 'width:100%; text-align:center'>
         <img src = 'loading-gif.gif' height = '75'>
       </div>
+
+      <div class = 'row'>
       <div id = 'current-tabs-div' class = 'col-md-6' ng-show = 'userIds != null'>
-        <h2>Current Tabs</h2>
+        <h2><i class = 'glyphicon glyphicon-th-list'></i> Current Tabs</h2>
         <div id = 'tabs-div'>
           <div  ng-repeat = 'key in userIds'>
             <h3><img src = '{{userDict[key].photoUrl}}' class = 'collaborator-img'> {{userDict[key].displayName}}</h3>
@@ -50,6 +79,7 @@
               <img src = '{{tab.favIconUrl}}' class = 'favicon-img'> <a href = '{{tab.url}}' target = '_blank'>{{tab.title}}</a>
               <div class = 'pull-right tab-icons'>
                 <i class = 'glyphicon glyphicon-bookmark' ng-click = 'bookmarkTab(tab)'></i>
+                <i class = 'glyphicon glyphicon-time' ng-click = 'checkHistory(key, tab)'></i>
               </div>
               </li>
             </ul>
@@ -57,18 +87,36 @@
         </div><!-- end of tabs div -->
       </div><!-- current tabs div -->
 
-      <div class = 'col-md-6' id = 'bookmarks-div' ng-show = 'userIds != null'>
-        <h2><i class = 'glyphicon glyphicon-bookmark'></i> Bookmarks</h2>
-        <ul class = 'tablist list-group'>
-          <li class = 'tab-li list-group-item' ng-repeat = 'tab in bookmarks track by $index'>
-            <img src = '{{tab.favIconUrl}}' class = 'favicon-img'>
-            <a href = '{{tab.url}}' target = '_blank'>&nbsp;{{tab.title}}</a>
-            <div class = 'pull-right tab-icons'>
-              <i class = 'glyphicon glyphicon-remove' ng-click = 'removeBookmark(tab)'></i>
-            </div>
-          </li>
-        </ul>
+      <div class = 'col-md-6' ng-show = 'userIds != null'>
+        <div id = 'bookmarks-div'>
+          <h2><i class = 'glyphicon glyphicon-bookmark'></i> Bookmarks</h2>
+          <ul class = 'tablist list-group'>
+            <li class = 'tab-li list-group-item' ng-repeat = 'tab in bookmarks track by $index'>
+              <img src = '{{tab.favIconUrl}}' class = 'favicon-img'>
+              <a href = '{{tab.url}}' target = '_blank'>&nbsp;{{tab.title}}</a>
+              <div class = 'pull-right tab-icons'>
+                <i class = 'glyphicon glyphicon-remove' ng-click = 'removeBookmark(tab)'></i>
+              </div>
+            </li>
+          </ul>
+        </div><!-- end of bookmarks div -->
       </div>
+      </div><!-- end of row -->
+
+      <div  class = 'row'>
+        <div id = 'history-div' ng-show = 'userIds != null'>
+          <h1><i class = 'glyphicon glyphicon-time'></i> History</h1>
+          <div ng-repeat = 'key in history.keys()'>
+            <h3>{{userDict[key].displayName}}</h3>
+            <ul class = 'list-group'>
+              <li class = 'list-group-item' ng-repeat = 'tab in history.get(key) track by $index' >
+                <img src = '{{tab.faviconUrl}}' class = 'favicon-img'> {{tab.title}}
+                <div class = 'pull-right label label-primary'>{{translateTime(tab.time)}}</div>
+              </li>
+            </ul>
+          </div>
+        </div><!-- end of history div -->
+      </div><!-- end of row -->
 
     </div>
   </body>

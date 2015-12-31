@@ -6,10 +6,43 @@ var myDoc;
 var myAuth;
 var tabMap;
 var bookmarks;
+var myHistory;
+
+
+function translateTime(timestamp){
+  var a= new Date(timestamp);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+  return time;
+}
 app.controller('CopilotCtrl', function($scope){
   $scope.msg = 'hi there';
   $scope.tabDict = {};
   $scope.collaborators = [];
+
+  $scope.translateTime = function(timestamp){
+    return translateTime(timestamp);
+  }
+
+  $scope.checkHistory = function(userId, tab){
+    //console.log('checking history');
+    //console.log(userId);
+    //console.log(tab);
+    userLog = myHistory.get(userId);
+    tabLog = _.filter(userLog, function(x){
+      return x.tabId == tab.id;
+    });
+    console.log(tabLog);
+    $scope.tabLog= tabLog;
+    $scope.modalTitle = 'Tab History';
+    $("#myModal").modal();
+  }
 
   $scope.bookmarkTab = function(tab){
     seen = false;
@@ -24,7 +57,6 @@ app.controller('CopilotCtrl', function($scope){
   }
   $scope.removeBookmark = function(tab){
     //remove all bookmarks with this tabs url
-    console.log('removing bookmark');
     marks = _.map(_.range(bookmarks.length), function(i){
       return bookmarks.get(i);
     });
@@ -90,6 +122,10 @@ app.controller('CopilotCtrl', function($scope){
       translateBookmarks(bookmarks);
     });
     translateBookmarks(bookmarks);
+
+    //get history
+    myHistory = myDoc.getModel().getRoot().get('main-history');
+    $scope.history = myHistory;
     activateMessages();
     handleCollaborators();
   }
@@ -118,7 +154,6 @@ app.controller('CopilotCtrl', function($scope){
     });
     setTimeout(function(){
       activateTabHover();
-      console.log('activated');
     }, 1000);
     $scope.$digest();
   }
@@ -141,9 +176,40 @@ app.controller('CopilotCtrl', function($scope){
     window.addEventListener('message', function(event){
       if(event.data && event.data.type && event.data.type == 'extension'){
         var message = event.data;
-        var myTabs = message.tabs;
-        tabMap.set(myAuth.sub, myTabs);
-        translateTabMap(tabMap);
+        if(message.name == 'tabChange'){
+          var myTabs = message.tabs;
+          tabMap.set(myAuth.sub, myTabs);
+          translateTabMap(tabMap);
+        }
+        if(message.name == 'history'){
+          tab = message.tab;
+          historyEntry = {
+            url: tab.url,
+            title: tab.title,
+            userId: myAuth.sub,
+            faviconUrl: tab.favIconUrl,
+            time: (new Date()).getTime(),
+            tabId: tab.id,
+            windowId: tab.windowId
+          };
+          hList = myHistory.get(myAuth.sub);
+          if(myHistory.get(myAuth.sub) == null){
+            myHistory.set(myAuth.sub, [historyEntry])
+          }
+          else{
+            hList = [];
+            currentH = myHistory.get(myAuth.sub);
+            hList.push(historyEntry);
+            lasturl = historyEntry.url;
+            for(var i=0;i<currentH.length;i++){
+              if(currentH[i].url != lasturl){
+                hList.push(currentH[i]);
+                lasturl = currentH[i].url;
+              }
+            }
+            myHistory.set(myAuth.sub, hList);
+          }
+        }
       }
     });
   }
