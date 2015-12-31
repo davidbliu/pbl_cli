@@ -48,9 +48,8 @@ app.controller('CopilotCtrl', function($scope){
     myDoc = doc;
     keys = myDoc.getModel().getRoot().keys();
     tabMap = myDoc.getModel().getRoot().get('mainChannel');
-    translateTabMap(tabMap);
     tabMap.addEventListener( gapi.drive.realtime.EventType.VALUE_CHANGED, function(event){
-      console.log('changed');
+      translateTabMap(tabMap);
     });
     activateMessages();
     handleCollaborators();
@@ -58,11 +57,10 @@ app.controller('CopilotCtrl', function($scope){
   
   function updateCollaborators(){
     $scope.collaborators = myDoc.getCollaborators();
-    console.log($scope.collaborators);
     $scope.userDict = _.object(_.map($scope.collaborators, function(item){
       return [item.userId, item];
     }));
-    $scope.$digest();
+    translateTabMap(tabMap);
   }
 
   function handleCollaborators(){
@@ -75,9 +73,12 @@ app.controller('CopilotCtrl', function($scope){
   }
 
   function translateTabMap(tabMap){
+    var userids = _.keys($scope.userDict);
     $scope.tabDict = {};
     _.each(tabMap.keys(), function(key){
-      $scope.tabDict[key] = tabMap.get(key);
+      if(_.contains(userids, key)){
+        $scope.tabDict[key] = tabMap.get(key);
+      }
     });
     $scope.userIds = _.keys($scope.tabDict);
     $scope.$digest();
@@ -91,7 +92,6 @@ app.controller('CopilotCtrl', function($scope){
         var myTabs = message.tabs;
         tabMap.set(myAuth.sub, myTabs);
         translateTabMap(tabMap);
-        $scope.$digest();
       }
     });
   }

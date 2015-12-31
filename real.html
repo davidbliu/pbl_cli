@@ -43,7 +43,7 @@
           <h3><img src = '{{userDict[key].photoUrl}}' class = 'collaborator-img'> {{userDict[key].displayName}}</h3>
           <ul class = 'tablist list-group'>
             <li class = 'list-group-item' ng-repeat = 'tab in tabDict[key] track by $index'>
-              <img src = '{{tab.favIconUrl}}' class = 'favicon-img'> {{tab.title}}
+            <img src = '{{tab.favIconUrl}}' class = 'favicon-img'> <a href = '{{tab.url}}' target = '_blank'>{{tab.title}}</a>
             </li>
           </ul>
         </div><!-- end oftabs-div-->
