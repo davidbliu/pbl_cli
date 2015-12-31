@@ -30,29 +30,12 @@
       <h3>Wtcha Dodo: Browse Together</h3>
     </div>
     <div id = 'copilot' ng-controller = 'CopilotCtrl'>
-      <div id = 'collaborators-div'>
-        <div ng-repeat = 'collaborator in collaborators track by $index'>
-          <img src = '{{collaborator.photoUrl}}' class = 'collaborator-img'>
-          <span>&nbsp;{{collaborator.displayName}}</span>
-        </div>
+      {{msg}}
+      <div id = 'collaborators-div'></div>
+      <h2>Current Tabs</h2>
+      <div id = 'tabs-div' class = 'col-md-6'>
+        <ul id = 'tabs-list' class = 'list-group'></ul>
       </div>
-
-      <div id = 'current-tabs-div' class = 'col-md-6'>
-        <h2>Current Tabs</h2>
-        <div id = 'tabs-div' ng-repeat = 'key in userIds'>
-          <h3><img src = '{{userDict[key].photoUrl}}' class = 'collaborator-img'> {{userDict[key].displayName}}</h3>
-          <ul class = 'tablist list-group'>
-            <li class = 'list-group-item' ng-repeat = 'tab in tabDict[key] track by $index'>
-              <img src = '{{tab.favIconUrl}}' class = 'favicon-img'> {{tab.title}}
-            </li>
-          </ul>
-        </div><!-- end oftabs-div-->
-      </div><!-- current tabs div -->
-
-
-
-
-
     </div>
   </body>
 </html>
