@@ -42,17 +42,19 @@
       </div>
       <div id = 'current-tabs-div' class = 'col-md-6' ng-show = 'userIds != null'>
         <h2>Current Tabs</h2>
-        <div id = 'tabs-div' ng-repeat = 'key in userIds'>
-          <h3><img src = '{{userDict[key].photoUrl}}' class = 'collaborator-img'> {{userDict[key].displayName}}</h3>
-          <ul class = 'tablist list-group'>
-            <li class = 'tab-li list-group-item {{activeClass(tab)}}' ng-repeat = 'tab in tabDict[key] track by $index'>
+        <div id = 'tabs-div'>
+          <div  ng-repeat = 'key in userIds'>
+            <h3><img src = '{{userDict[key].photoUrl}}' class = 'collaborator-img'> {{userDict[key].displayName}}</h3>
+            <ul class = 'tablist list-group'>
+              <li class = 'tab-li list-group-item {{activeClass(tab)}}' ng-repeat = 'tab in tabDict[key] track by $index'>
               <img src = '{{tab.favIconUrl}}' class = 'favicon-img'> <a href = '{{tab.url}}' target = '_blank'>{{tab.title}}</a>
               <div class = 'pull-right tab-icons'>
                 <i class = 'glyphicon glyphicon-bookmark' ng-click = 'bookmarkTab(tab)'></i>
               </div>
-            </li>
-          </ul>
-        </div><!-- end oftabs-div-->
+              </li>
+            </ul>
+          </div>
+        </div><!-- end of tabs div -->
       </div><!-- current tabs div -->
 
       <div class = 'col-md-6' id = 'bookmarks-div' ng-show = 'userIds != null'>
