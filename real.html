@@ -27,7 +27,7 @@
   </head>
   <body ng-app = 'copilotApp'>
     <div class = 'jumbotron'>
-      <h3>Wtcha Dodo: Browse Together</h3>
+      <h3><img src = 'mushroom.png' height = 50> Wtcha Dodo: Browse Together</h3>
     </div>
     <div id = 'copilot' ng-controller = 'CopilotCtrl'>
       <div id = 'collaborators-div'>
@@ -37,21 +37,36 @@
         </div>
       </div>
 
-      <div id = 'current-tabs-div' class = 'col-md-6'>
+      <div ng-show = 'userIds == null' style = 'width:100%; text-align:center'>
+        <img src = 'loading-gif.gif' height = '75'>
+      </div>
+      <div id = 'current-tabs-div' class = 'col-md-6' ng-show = 'userIds != null'>
         <h2>Current Tabs</h2>
         <div id = 'tabs-div' ng-repeat = 'key in userIds'>
           <h3><img src = '{{userDict[key].photoUrl}}' class = 'collaborator-img'> {{userDict[key].displayName}}</h3>
           <ul class = 'tablist list-group'>
-            <li class = 'list-group-item' ng-repeat = 'tab in tabDict[key] track by $index'>
-            <img src = '{{tab.favIconUrl}}' class = 'favicon-img'> <a href = '{{tab.url}}' target = '_blank'>{{tab.title}}</a>
+            <li class = 'tab-li list-group-item {{activeClass(tab)}}' ng-repeat = 'tab in tabDict[key] track by $index'>
+              <img src = '{{tab.favIconUrl}}' class = 'favicon-img'> <a href = '{{tab.url}}' target = '_blank'>{{tab.title}}</a>
+              <div class = 'pull-right tab-icons'>
+                <i class = 'glyphicon glyphicon-bookmark' ng-click = 'bookmarkTab(tab)'></i>
+              </div>
             </li>
           </ul>
         </div><!-- end oftabs-div-->
       </div><!-- current tabs div -->
 
-
-
-
+      <div class = 'col-md-6' id = 'bookmarks-div' ng-show = 'userIds != null'>
+        <h2><i class = 'glyphicon glyphicon-bookmark'></i> Bookmarks</h2>
+        <ul class = 'tablist list-group'>
+          <li class = 'tab-li list-group-item' ng-repeat = 'tab in bookmarks track by $index'>
+            <img src = '{{tab.favIconUrl}}' class = 'favicon-img'>
+            <a href = '{{tab.url}}' target = '_blank'>&nbsp;{{tab.title}}</a>
+            <div class = 'pull-right tab-icons'>
+              <i class = 'glyphicon glyphicon-remove' ng-click = 'removeBookmark(tab)'></i>
+            </div>
+          </li>
+        </ul>
+      </div>
 
     </div>
   </body>

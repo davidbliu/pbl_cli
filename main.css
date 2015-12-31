@@ -6,6 +6,19 @@ body{
 a{
   color:#009bff !important;
 }
+.glyphicon:hover{
+  opacity:0.5;
+  cursor:pointer;
+}
+.list-group-item{
+  overflow:auto;
+}
+.tab-icons{
+  display:none;
+}
+.active-tab{
+  background-color:rgba(0,0,0,0.1);
+}
 #collaborators-div{
   margin:15px;
   padding:10px;
