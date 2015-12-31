@@ -44,7 +44,7 @@
               <ul class = 'list-group'>
                 <li ng-repeat = 'tab in tabLog track by $index' class = 'list-group-item'>
                   <img src = '{{tab.faviconUrl}}' class = 'favicon-img'> 
-                  <a href = '{{tab.url}}'>&nbsp;{{tab.title}}</a>
+                  <a href = '{{tab.url}}' target = '_blank'>&nbsp;{{tab.title}}</a>
                   <div class = 'pull-right label label-primary'>{{translateTime(tab.time)}}</div>
                 </li>
               </ul>
@@ -109,7 +109,7 @@
           <div ng-repeat = 'key in history.keys()'>
             <h3>{{userDict[key].displayName}}</h3>
             <ul class = 'list-group'>
-              <li class = 'list-group-item' ng-repeat = 'tab in history.get(key) track by $index' >
+              <li class = 'list-group-item' ng-repeat = 'tab in history.get(key) track by $index | limitTo : historyLimit' >
                 <img src = '{{tab.faviconUrl}}' class = 'favicon-img'> {{tab.title}}
                 <div class = 'pull-right label label-primary'>{{translateTime(tab.time)}}</div>
               </li>

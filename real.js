@@ -25,6 +25,7 @@ app.controller('CopilotCtrl', function($scope){
   $scope.msg = 'hi there';
   $scope.tabDict = {};
   $scope.collaborators = [];
+  $scope.historyLimit = 15;
 
   $scope.translateTime = function(timestamp){
     return translateTime(timestamp);
