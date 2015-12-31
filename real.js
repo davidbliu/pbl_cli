@@ -110,6 +110,7 @@ app.controller('CopilotCtrl', function($scope){
     model.getRoot().set('demo_string', string);
   }
   function onFileLoaded(doc) {
+    console.log('file loaded');
     myDoc = doc;
     keys = myDoc.getModel().getRoot().keys();
     //get tabMap for currently open tabs
@@ -129,10 +130,12 @@ app.controller('CopilotCtrl', function($scope){
     $scope.history = myHistory;
     activateMessages();
     handleCollaborators();
+    console.log('handle the collabs');
   }
 
   
   function updateCollaborators(){
+    console.log('updating collaborators');
     $scope.collaborators = myDoc.getCollaborators();
     $scope.userDict = _.object(_.map($scope.collaborators, function(item){
       return [item.userId, item];
@@ -141,6 +144,8 @@ app.controller('CopilotCtrl', function($scope){
   }
 
   function handleCollaborators(){
+    console.log('here are collaborators');
+    updateCollaborators();
     myDoc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_JOINED, function(){
       updateCollaborators();
     });
