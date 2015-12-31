@@ -120,6 +120,7 @@ app.controller('CopilotCtrl', function($scope){
       activateTabHover();
       console.log('activated');
     }, 1000);
+    $scope.$digest();
   }
 
   function translateTabMap(tabMap){
