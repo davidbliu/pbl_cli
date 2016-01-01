@@ -1,0 +1,8 @@
+
+          <ul class = 'list-group'>
+            <li class = 'list-group-item' ng-repeat = 'tab in history.get(key) track by $index | limitTo : historyLimit' >
+              <img src = '{{tab.faviconUrl}}' class = 'favicon-img'> 
+              <a href = '{{tab.url}}' target = "_blank">{{tab.title}}</a>
+                <div class = 'pull-right label label-primary'>{{translateTime(tab.time)}}</div>
+              </li>
+            </ul>

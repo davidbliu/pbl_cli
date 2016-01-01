@@ -21,6 +21,17 @@ function translateTime(timestamp){
   var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
   return time;
 }
+
+function scrollTabs(id){
+  setTimeout(function(){
+    $('.collaborator-link').click(function(){
+      id = $(this).attr('id').split('-')[0];
+      tabs_id = id + '-tabs';
+      $("html, body").animate({ scrollTop: $('#'+tabs_id).offset().top }, 100);
+    });
+  }, 1000);
+}
+
 app.controller('CopilotCtrl', function($scope){
   $scope.msg = 'hi there';
   $scope.tabDict = {};
@@ -32,14 +43,10 @@ app.controller('CopilotCtrl', function($scope){
   }
 
   $scope.checkHistory = function(userId, tab){
-    //console.log('checking history');
-    //console.log(userId);
-    //console.log(tab);
     userLog = myHistory.get(userId);
     tabLog = _.filter(userLog, function(x){
       return x.tabId == tab.id;
     });
-    console.log(tabLog);
     $scope.tabLog= tabLog;
     $scope.modalTitle = 'Tab History';
     $("#myModal").modal();
@@ -56,6 +63,39 @@ app.controller('CopilotCtrl', function($scope){
       bookmarks.push(tab); 
     }
   }
+  function showHistory(userId){
+    $scope.historyList = myHistory.get(userId);
+    $scope.historyUserId = userId;
+    $('.history-checkbox').each(function(){
+      $(this).prop('checked', false);
+    });
+    setTimeout(function(){
+      activateTabHover();
+    }, 1000);
+  }
+
+  $scope.showHistory = function(userId){
+    showHistory(userId);
+  }
+  $scope.removeSelectedHistory = function(){
+    var excludes = [];
+    $('.history-checkbox:checked').each(function(){
+      excludes.push($(this).attr('id'));
+    });
+    //remove excludes from history
+    var currHistory = myHistory.get($scope.historyUserId);
+    var newHistory = [];
+    _.each(_.range(currHistory.length), function(i){
+      var entry = currHistory[i];
+      var entryId = entry.tabId+'-'+entry.time;
+      if(!_.contains(excludes, entryId)){
+        newHistory.push(entry);
+      }
+    });
+    myHistory.set($scope.historyUserId,newHistory);
+    showHistory($scope.historyUserId);
+  }
+
   $scope.removeBookmark = function(tab){
     //remove all bookmarks with this tabs url
     marks = _.map(_.range(bookmarks.length), function(i){
@@ -99,8 +139,6 @@ app.controller('CopilotCtrl', function($scope){
     }, false);
   }
 
-
-
   function start() {
     realtimeUtils.load(docId.replace('/', ''), onFileLoaded, onFileInitialize);
   }
@@ -128,11 +166,26 @@ app.controller('CopilotCtrl', function($scope){
     //get history
     myHistory = myDoc.getModel().getRoot().get('main-history');
     $scope.history = myHistory;
+    // get comments
+    myComments = myDoc.getModel().getRoot().get('main-comments');
+    myComments.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, function(event){
+      console.log('webpage: comments changed');
+      console.log(event);
+      updateComments(event.property);
+    });
     activateMessages();
     handleCollaborators();
     console.log('handle the collabs');
   }
 
+  function updateComments(url){
+    changeMessage = {
+      name:'updateComments',
+      comments:myComments.get(url),
+      url:url
+    }
+    window.postMessage(changeMessage, '*');
+  }
   
   function updateCollaborators(){
     console.log('updating collaborators');
@@ -140,6 +193,7 @@ app.controller('CopilotCtrl', function($scope){
     $scope.userDict = _.object(_.map($scope.collaborators, function(item){
       return [item.userId, item];
     }));
+    scrollTabs();
     translateTabMap(tabMap);
   }
 
@@ -186,7 +240,34 @@ app.controller('CopilotCtrl', function($scope){
           var myTabs = message.tabs;
           tabMap.set(myAuth.sub, myTabs);
           translateTabMap(tabMap);
+          //send comments to the activeTab
+          active = _.filter(myTabs, function(tab){
+            return tab.active;
+          });
+          console.log('sending active comments');
+          console.log(active[0].url);
+          updateComments(active[0].url);
         }
+
+        if(message.name == 'postComment'){
+          console.log('webpage received comment');
+          console.log(message);
+          comment = message.comment;
+          comment.userId = myAuth.sub;
+          if(myComments.get(comment.url) == null){
+            myComments.set(comment.url, [comment]);
+          }
+          else{
+            var clist= [];
+            var current= myComments.get(comment.url);
+            clist.push(comment);
+            for(var i=0;i<current.length;i++){
+              clist.push(current[i]);
+            }
+            myComments.set(comment.url, clist);
+          }
+        }
+
         if(message.name == 'history'){
           tab = message.tab;
           historyEntry = {
@@ -206,11 +287,18 @@ app.controller('CopilotCtrl', function($scope){
             hList = [];
             currentH = myHistory.get(myAuth.sub);
             hList.push(historyEntry);
-            lasturl = historyEntry.url;
+            lasturls = {};
+            lasturls[historyEntry.tabId] = historyEntry.url;
+            lastTitles = {};
+            lastTitles[historyEntry.tabId] = historyEntry.title;
+            seenIds = [];
+            //lasturl = historyEntry.url;
             for(var i=0;i<currentH.length;i++){
-              if(currentH[i].url != lasturl){
-                hList.push(currentH[i]);
-                lasturl = currentH[i].url;
+              e = currentH[i];
+              if(lasturls[e.tabId] != e.url && lastTitles[e.tabId] != e.title){
+                hList.push(e);
+                lasturls[e.tabId]=e.url;
+                lastTitles[e.tabId] = e.title;
               }
             }
             myHistory.set(myAuth.sub, hList);

@@ -31,6 +31,19 @@
     </div>
     
     <div id = 'copilot' ng-controller = 'CopilotCtrl'>
+      <div class = 'jumbotron jumbotron-gray'>
+        <div id = 'collaborators-div'>
+          <div style = 'text-align:left;width:100%;'>
+            <h4>Collaborators</h4>
+            <div ng-repeat = 'collaborator in collaborators track by $index'>
+              <img src = 'http://{{collaborator.photoUrl}}' class = 'collaborator-img'>
+              <a class = 'collaborator-link' href = 'javascript:void(0)'  id = '{{collaborator.userId}}-link'>
+                <span>&nbsp;{{collaborator.displayName}}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div id = 'myModal' class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
@@ -56,12 +69,6 @@
     </div><!-- /.modal -->
 
 
-    <div id = 'collaborators-div'>
-      <div ng-repeat = 'collaborator in collaborators track by $index'>
-        <img src = '{{collaborator.photoUrl}}' class = 'collaborator-img'>
-        <span>&nbsp;{{collaborator.displayName}}</span>
-      </div>
-    </div>
 
     <div ng-show = 'userIds == null' style = 'width:100%; text-align:center'>
       <img src = 'loading-gif.gif' height = '75'>
@@ -72,7 +79,7 @@
       <h2><i class = 'glyphicon glyphicon-th-list'></i> Current Tabs</h2>
       <div id = 'tabs-div'>
         <div  ng-repeat = 'key in userIds'>
-          <h3><img src = '{{userDict[key].photoUrl}}' class = 'collaborator-img'> {{userDict[key].displayName}}</h3>
+          <h3 id = '{{key}}-tabs'><img src = 'http://{{userDict[key].photoUrl}}' class = 'collaborator-img'> {{userDict[key].displayName}}</h3>
           <ul class = 'tablist list-group'>
             <li class = 'tab-li list-group-item {{activeClass(tab)}}' ng-repeat = 'tab in tabDict[key] track by $index'>
             <img src = '{{tab.favIconUrl}}' class = 'favicon-img'> 
@@ -92,7 +99,7 @@
         <h2><i class = 'glyphicon glyphicon-bookmark'></i> Bookmarks</h2>
         <ul class = 'tablist list-group'>
           <li class = 'tab-li list-group-item' ng-repeat = 'tab in bookmarks track by $index'>
-            <img src = '{{tab.favIconUrl}}' class = 'favicon-img'>
+            <img src = '{{tab.favIconUrl || tab.faviconUrl}}' class = 'favicon-img'>
             <a href = '{{tab.url}}' target = '_blank'>&nbsp;{{tab.title}}</a>
             <div class = 'pull-right tab-icons'>
               <i class = 'glyphicon glyphicon-remove' ng-click = 'removeBookmark(tab)'></i>
@@ -103,21 +110,34 @@
     </div>
     </div><!-- end of row -->
 
-    <div  class = 'row'>
+    <div  class = 'row' id = 'tools-row'>
       <div id = 'history-div' ng-show = 'userIds != null'>
         <h1><i class = 'glyphicon glyphicon-time'></i> History</h1>
         <div ng-repeat = 'key in history.keys()'>
-          <h3>{{userDict[key].displayName}}</h3>
-          <ul class = 'list-group'>
-            <li class = 'list-group-item' ng-repeat = 'tab in history.get(key) track by $index | limitTo : historyLimit' >
-              <img src = '{{tab.faviconUrl}}' class = 'favicon-img'> 
-              <a href = '{{tab.url}}' target = "_blank">{{tab.title}}</a>
-                <div class = 'pull-right label label-primary'>{{translateTime(tab.time)}}</div>
-              </li>
-            </ul>
+          <div class = 'collaborator-history'>
+            <img src = 'http://{{userDict[key].photoUrl}}' class = 'collaborator-img'>
+            <a href = 'javascript:void(0)' ng-click = 'showHistory(key)'>
+              {{userDict[key].displayName || 'User '+key}}
+            </a>
           </div>
-        </div><!-- end of history div -->
-      </div><!-- end of row -->
+        </div>
+        <div id = 'collaborator-history-div' ng-show = 'historyUserId != null'>
+          <h3>{{userDict[historyUserId].displayName || 'User '+key}}'s history ({{historyList.length}})</h3>
+          <div class = 'btn btn-default' ng-click = 'removeSelectedHistory()'>Remove Selected Items</div>
+          <ul class = 'list-group'>
+            <li ng-repeat = 'entry in historyList track by $index' class = 'tab-li list-group-item'>
+              <input type = 'checkbox' value = '' class = 'history-checkbox' id = '{{entry.tabId}}-{{entry.time}}'>
+              <span class = 'text-muted'>{{translateTime(entry.time)}}</span>
+              <img src = '{{entry.faviconUrl}}' class = 'favicon-img'>
+              <a href = '{{entry.url}}' target = '_blank'>&nbsp;{{entry.title}}</a>
+            <div class = 'pull-right tab-icons'>
+              <i class = 'glyphicon glyphicon-bookmark' ng-click = 'bookmarkTab(entry)'></i>
+            </div>
+            </li>
+          </ul>
+        </div>
+      </div><!-- end of history div -->
+    </div><!-- end of row -->
 
     </div>
   </body>
